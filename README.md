@@ -4,12 +4,12 @@ Material Purchase app with Flutter BloC and Clean Architecture.
 
 ## Screenshot
 
-![1]()
-![2]()
+![1](https://res.cloudinary.com/dp3tzm2wz/image/upload/v1742152496/1_nq0cxx.png)
+![2](https://res.cloudinary.com/dp3tzm2wz/image/upload/v1742152497/2_tonxq4.png)
 
 ## App Access
 
-- **Admin**: Use the following credentials to login as an admin:
+- **Login**: Use the following credentials to login:
     - Email: interview@gmail.com
     - Password: 12345678
 

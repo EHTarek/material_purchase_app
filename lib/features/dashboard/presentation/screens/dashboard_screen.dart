@@ -28,7 +28,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   late TextEditingController _searchController;
   ScrollController _scrollController = ScrollController();
-  List<DataEntity> data = [];
+  List<DataEntity> purchaseData = [];
   MaterialPurchaseEntity? materialPurchaseEntity;
 
   @override
@@ -91,7 +91,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: Stack(children: [
         RefreshIndicator(
           onRefresh: () async {
-            context.read<AllProductsBloc>().add(GetAllProductsEvent());
+            context.read<PurchaseBloc>().add(GetPurchaseDataEvent(page: 1));
           },
           child: CustomScrollView(slivers: [
 
@@ -148,65 +148,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   suffixChild: IconButton(
                     icon: Icon(Icons.search, size: 20, color: context.color.gray),
                     onPressed: () {
-                      // _searchController.clear();
-                      // context.read<AllProductsBloc>().add(GetAllProductsEvent());
+                      context.read<PurchaseBloc>().add(SearchPurchaseEvent(query: _searchController.text.trim()));
+                      _searchController.clear();
                     },
                   ),
                   onChanged: (_) {
-                    if (_searchController.text.isNotEmpty) {
-                      context.read<AllProductsBloc>().add(SearchProductsEvent(query: _searchController.text));
-                    }
+                    context.read<PurchaseBloc>().add(SearchPurchaseEvent(query: _searchController.text.trim()));
                   },
                   onSubmit: (_) {
-                    if (_searchController.text.isNotEmpty) {
-                      context.read<AllProductsBloc>().add(SearchProductsEvent(query: _searchController.text));
-                    }
+                    context.read<PurchaseBloc>().add(SearchPurchaseEvent(query: _searchController.text.trim()));
+                    _searchController.clear();
                   },
                 ),
               ),
             ),
-
-            /*BlocConsumer<AllProductsBloc, AllProductsState>(
-            listenWhen: (previous, current) => current is AllProductsError
-                || current is AllProductsSessionOut || current is AllProductsNoInternet,
-            listener: (context, state) {
-              if (state is AllProductsSessionOut) {
-                context.pushNamedAndRemoveUntil(Routes.login);
-              } else if (state is AllProductsNoInternet) {
-                showCustomSnackBar('No Internet Connection');
-              } else if (state is AllProductsError) {
-                showCustomSnackBar(state.message);
-              }
-            },
-            builder: (context, state) {
-              if (state is AllProductsLoaded || state is SearchProductLoaded) {
-                List<ProductsEntity> products = [];
-                if (state is AllProductsLoaded) {
-                  products = state.products;
-                } else if (state is SearchProductLoaded) {
-                  products = state.products;
-                }
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                        (context, index) => Padding(
-                      padding: EdgeInsets.only(bottom: index +1 == products.length ? 100 : 0),
-                      child: ProductWidget(product: products[index]),
-                    ),
-                    childCount: products.length,
-                  ),
-                );
-              }
-              return SliverList(
-                delegate: SliverChildBuilderDelegate(
-                      (context, index) => Padding(
-                    padding: EdgeInsets.only(bottom: 0),
-                    child: ProductShimmerWidget(),
-                  ),
-                  childCount: 10,
-                ),
-              );
-            },
-          ),*/
 
             BlocConsumer<PurchaseBloc, PurchaseState>(
               // listenWhen: (previous, current) => current is PurchaseLoaded
@@ -221,13 +176,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 }
               },
               builder: (context, state) {
-                if (state is PurchaseLoaded || state is SearchProductLoaded) {
+                if (state is PurchaseLoaded || state is PurchaseSearchLoaded) {
                   if (state is PurchaseLoaded) {
                     materialPurchaseEntity = state.materialPurchaseEntity;
-                    data.addAll(state.materialPurchaseEntity.materialPurchaseList?.data ?? []);
-                  } /*else if (state is SearchProductLoaded) {
-                    products = state.products;
-                  }*/
+                    purchaseData = state.materialPurchaseEntity.materialPurchaseList?.data ?? [];
+                  } else if (state is PurchaseSearchLoaded) {
+                    purchaseData = state.searchResult;
+                  }
                   return SliverToBoxAdapter(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -267,17 +222,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 DataColumn(label: Text('Card No')),
                                 DataColumn(label: Text('Date')),
                               ],
-                              rows: List.generate(data.length, (index) {
+                              rows: List.generate(purchaseData.length, (index) {
                                 return DataRow(
                                   color: WidgetStateProperty.all(index.isEven ? Colors.white : Colors.grey.shade200),
                                   cells: [
                                     DataCell(Text('${index + 1}')),
-                                    DataCell(Text(data[index].lineItemName ?? '')),
-                                    DataCell(Text(data[index].store ?? '')),
-                                    DataCell(Text(data[index].runnersName ?? '')),
-                                    DataCell(Text('\$${data[index].amount ?? ''}')),
-                                    DataCell(Text(data[index].cardNumber ?? '')),
-                                    DataCell(Text(data[index].transactionDate?.split(' ').first ?? '')),
+                                    DataCell(Text(purchaseData[index].lineItemName ?? '')),
+                                    DataCell(Text(purchaseData[index].store ?? '')),
+                                    DataCell(Text(purchaseData[index].runnersName ?? '')),
+                                    DataCell(Text('\$${purchaseData[index].amount ?? ''}')),
+                                    DataCell(Text(purchaseData[index].cardNumber ?? '')),
+                                    DataCell(Text(purchaseData[index].transactionDate?.split(' ').first ?? '')),
                                   ],
                                 );
                               }),

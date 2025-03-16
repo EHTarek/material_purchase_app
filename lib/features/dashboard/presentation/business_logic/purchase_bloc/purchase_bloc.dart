@@ -11,8 +11,11 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
   final GetPurchaseData getPurchaseData;
   PurchaseBloc({required this.getPurchaseData}) : super(PurchaseInitial()) {
     on<GetPurchaseDataEvent>(_onGetPurchaseDataEvent);
+    on<SearchPurchaseEvent>(_onSearchPurchaseEvent);
   }
 
+  List<DataEntity> allPurchase = [];
+  MaterialPurchaseEntity materialPurchaseEntity = MaterialPurchaseEntity();
 
   Future<void> _onGetPurchaseDataEvent(GetPurchaseDataEvent event, Emitter<PurchaseState> emit) async {
     emit(PurchaseLoading());
@@ -29,8 +32,23 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
         }
       },
       (purchase) {
-        return emit(PurchaseLoaded(materialPurchaseEntity: purchase));
+        allPurchase.addAll(purchase.materialPurchaseList?.data ?? []);
+        materialPurchaseEntity = purchase;
+        return emit(PurchaseLoaded(materialPurchaseEntity: purchase, purchaseResult: allPurchase));
       }
     );
+  }
+
+  Future<void> _onSearchPurchaseEvent(SearchPurchaseEvent event, Emitter<PurchaseState> emit) async {
+    emit(PurchaseLoading());
+    List<DataEntity> searchResult = [];
+    if(event.query.isNotEmpty && allPurchase.isNotEmpty){
+      searchResult = allPurchase.where((element) {
+        return element.lineItemName!.toLowerCase().contains(event.query.toLowerCase());
+      }).toList();
+    }else{
+      searchResult = allPurchase;
+    }
+    emit(PurchaseSearchLoaded(materialPurchaseEntity: materialPurchaseEntity, searchResult: searchResult));
   }
 }

@@ -10,3 +10,10 @@ class GetPurchaseDataEvent extends PurchaseEvent {
   @override
   List<Object?> get props => [page];
 }
+
+class SearchPurchaseEvent extends PurchaseEvent {
+  final String query;
+  const SearchPurchaseEvent({required this.query});
+  @override
+  List<Object?> get props => [query];
+}

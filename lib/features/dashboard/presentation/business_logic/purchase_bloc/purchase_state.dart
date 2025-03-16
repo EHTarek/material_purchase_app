@@ -16,13 +16,28 @@ final class PurchaseLoading extends PurchaseState {
 
 final class PurchaseLoaded extends PurchaseState {
   final MaterialPurchaseEntity materialPurchaseEntity;
+  final List<DataEntity> purchaseResult;
 
   const PurchaseLoaded({
     required this.materialPurchaseEntity,
+    required this.purchaseResult,
   });
 
   @override
-  List<Object> get props => [materialPurchaseEntity];
+  List<Object> get props => [materialPurchaseEntity, purchaseResult];
+}
+
+final class PurchaseSearchLoaded extends PurchaseState {
+  final MaterialPurchaseEntity materialPurchaseEntity;
+  final List<DataEntity> searchResult;
+
+  const PurchaseSearchLoaded({
+    required this.materialPurchaseEntity,
+    required this.searchResult,
+  });
+
+  @override
+  List<Object> get props => [materialPurchaseEntity, searchResult];
 }
 
 final class PurchaseError extends PurchaseState {

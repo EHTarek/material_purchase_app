@@ -1,4 +1,4 @@
-package com.tariqul.ecommerce.material_purchase_app
+package com.tariqul.material_purchase_app
 
 import io.flutter.embedding.android.FlutterActivity
 
