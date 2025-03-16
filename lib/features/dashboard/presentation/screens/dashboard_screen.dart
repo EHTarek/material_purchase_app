@@ -1,0 +1,317 @@
+import 'dart:ui';
+
+import 'package:material_purchase_app/common/widgets/custom_snackbar_widget.dart';
+import 'package:material_purchase_app/common/widgets/custom_textfield_widget.dart';
+import 'package:material_purchase_app/core/di/dependency_injection.dart';
+import 'package:material_purchase_app/core/extentions/go_router_extension.dart';
+import 'package:material_purchase_app/core/navigation/routes.dart';
+import 'package:material_purchase_app/core/theme/style.dart';
+import 'package:material_purchase_app/core/theme/theme.dart';
+import 'package:material_purchase_app/features/authentication/presentation/business_logic/authentication_bloc/authentication_bloc.dart';
+import 'package:material_purchase_app/features/dashboard/domain/entities/material_purchase_entity.dart';
+import 'package:material_purchase_app/features/dashboard/domain/entities/products_entity.dart';
+import 'package:material_purchase_app/features/dashboard/presentation/business_logic/all_products_bloc/all_products_bloc.dart';
+import 'package:material_purchase_app/features/dashboard/presentation/business_logic/cart_cubit/cart_cubit.dart';
+import 'package:material_purchase_app/features/dashboard/presentation/business_logic/purchase_bloc/purchase_bloc.dart';
+import 'package:material_purchase_app/features/dashboard/presentation/widgets/checkout_dialog_widget.dart';
+import 'package:material_purchase_app/features/dashboard/presentation/widgets/product_shimmer_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  late TextEditingController _searchController;
+  ScrollController _scrollController = ScrollController();
+  List<DataEntity> data = [];
+  MaterialPurchaseEntity? materialPurchaseEntity;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+    // context.read<AllProductsBloc>().add(GetAllProductsEvent());
+    // context.read<AuthenticationBloc>().add(GetLoggedInUserData());
+    context.read<PurchaseBloc>().add(GetPurchaseDataEvent(page: 1));
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8) {
+        if(materialPurchaseEntity?.materialPurchaseList?.nextPageUrl != null) {
+          context.read<PurchaseBloc>().add(GetPurchaseDataEvent(page: (materialPurchaseEntity?.materialPurchaseList?.currentPage ?? 0) + 1));
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    sl<AllProductsBloc>().close();
+    super.dispose();
+  }
+
+  bool _isMenuOpen = false;
+
+  void _showBlurEffect() {
+    setState(() {
+      _isMenuOpen = true;
+    });
+  }
+
+  void _hideBlurEffect() {
+    Future.delayed(const Duration(milliseconds: 200), () {
+      setState(() {
+        _isMenuOpen = false;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // resizeToAvoidBottomInset: false,
+      floatingActionButton: FloatingActionButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50),
+        ),
+        onPressed: () {
+          showDialog(
+            // barrierColor: Colors.black.withAlpha(50),
+            context: context,
+            builder: (context) => const CheckoutDialogWidget(),
+          );
+        },
+        child: Icon(Icons.add_circle),
+      ),
+      body: Stack(children: [
+        RefreshIndicator(
+          onRefresh: () async {
+            context.read<AllProductsBloc>().add(GetAllProductsEvent());
+          },
+          child: CustomScrollView(slivers: [
+
+            SliverAppBar(
+              pinned: true,
+              backgroundColor: context.color.scaffoldBackground,
+              centerTitle: true,
+              title: const Text('Material Purchase'),
+              actions: [
+                PopupMenuButton(
+                  onOpened: _showBlurEffect,
+                  onCanceled: _hideBlurEffect,
+                  onSelected: (value) => _hideBlurEffect(),
+                  color: context.color.primary,
+                  iconColor: context.color.primary,
+                  icon: const Icon(Icons.more_vert_sharp),
+                  padding: EdgeInsets.all(2),
+                  menuPadding: EdgeInsets.all(2),
+                  position: PopupMenuPosition.under,
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      padding: EdgeInsets.zero,
+                      height: 30,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: context.color.primary,
+                        ),
+                        height: 30,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.logout, color: Colors.white),
+                            const SizedBox(width: 10),
+                            const Text('Logout', style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: CustomTextField(
+                  controller: _searchController,
+                  hintText: 'Search',
+                  labelText: 'Search',
+                  style: fontRegular.copyWith(fontSize: 14),
+                  hintStyle: fontRegular.copyWith(fontSize: 14),
+                  showLabelText: false,
+                  suffixChild: IconButton(
+                    icon: Icon(Icons.search, size: 20, color: context.color.gray),
+                    onPressed: () {
+                      // _searchController.clear();
+                      // context.read<AllProductsBloc>().add(GetAllProductsEvent());
+                    },
+                  ),
+                  onChanged: (_) {
+                    if (_searchController.text.isNotEmpty) {
+                      context.read<AllProductsBloc>().add(SearchProductsEvent(query: _searchController.text));
+                    }
+                  },
+                  onSubmit: (_) {
+                    if (_searchController.text.isNotEmpty) {
+                      context.read<AllProductsBloc>().add(SearchProductsEvent(query: _searchController.text));
+                    }
+                  },
+                ),
+              ),
+            ),
+
+            /*BlocConsumer<AllProductsBloc, AllProductsState>(
+            listenWhen: (previous, current) => current is AllProductsError
+                || current is AllProductsSessionOut || current is AllProductsNoInternet,
+            listener: (context, state) {
+              if (state is AllProductsSessionOut) {
+                context.pushNamedAndRemoveUntil(Routes.login);
+              } else if (state is AllProductsNoInternet) {
+                showCustomSnackBar('No Internet Connection');
+              } else if (state is AllProductsError) {
+                showCustomSnackBar(state.message);
+              }
+            },
+            builder: (context, state) {
+              if (state is AllProductsLoaded || state is SearchProductLoaded) {
+                List<ProductsEntity> products = [];
+                if (state is AllProductsLoaded) {
+                  products = state.products;
+                } else if (state is SearchProductLoaded) {
+                  products = state.products;
+                }
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (context, index) => Padding(
+                      padding: EdgeInsets.only(bottom: index +1 == products.length ? 100 : 0),
+                      child: ProductWidget(product: products[index]),
+                    ),
+                    childCount: products.length,
+                  ),
+                );
+              }
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) => Padding(
+                    padding: EdgeInsets.only(bottom: 0),
+                    child: ProductShimmerWidget(),
+                  ),
+                  childCount: 10,
+                ),
+              );
+            },
+          ),*/
+
+            BlocConsumer<PurchaseBloc, PurchaseState>(
+              // listenWhen: (previous, current) => current is PurchaseLoaded
+              //     || current is PurchaseSessionOut || current is PurchaseNoInternet,
+              listener: (context, state) {
+                if (state is PurchaseSessionOut) {
+                  context.pushNamedAndRemoveUntil(Routes.login);
+                } else if (state is PurchaseNoInternet) {
+                  showCustomSnackBar('No Internet Connection');
+                } else if (state is PurchaseError) {
+                  showCustomSnackBar(state.message);
+                }
+              },
+              builder: (context, state) {
+                if (state is PurchaseLoaded || state is SearchProductLoaded) {
+                  if (state is PurchaseLoaded) {
+                    materialPurchaseEntity = state.materialPurchaseEntity;
+                    data.addAll(state.materialPurchaseEntity.materialPurchaseList?.data ?? []);
+                  } /*else if (state is SearchProductLoaded) {
+                    products = state.products;
+                  }*/
+                  return SliverToBoxAdapter(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      child: DataTableTheme(
+                        data: DataTableThemeData(
+                          headingRowHeight: 35, // Header row height
+                          dataRowMinHeight: 35, // Minimum data row height
+                          dataRowMaxHeight: 35, // Maximum data row height
+                          headingRowColor: WidgetStateProperty.all(context.color.primary),
+                          headingTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            topRight: Radius.circular(12),
+                          ),
+                          child: Material(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              topRight: Radius.circular(12),
+                            ),
+                            child: DataTable(
+                              border: TableBorder(
+                                horizontalInside: BorderSide(width: 1, color: Colors.grey.shade300), // Row separators
+                                verticalInside: BorderSide(width: 1, color: Colors.grey.shade400), // Column separators
+                                left: BorderSide(width: 1, color: Colors.grey.shade400), // Left border
+                                right: BorderSide(width: 1, color: Colors.grey.shade400), // Right border
+                                bottom: BorderSide(width: 1, color: Colors.grey.shade400), // Bottom border
+                              ),
+                              columns: const [
+                                DataColumn(label: Text('SL')),
+                                DataColumn(label: Text('Item')),
+                                DataColumn(label: Text('Store')),
+                                DataColumn(label: Text("Runner's Name")),
+                                DataColumn(label: Text('Amount')),
+                                DataColumn(label: Text('Card No')),
+                                DataColumn(label: Text('Date')),
+                              ],
+                              rows: List.generate(data.length, (index) {
+                                return DataRow(
+                                  color: WidgetStateProperty.all(index.isEven ? Colors.white : Colors.grey.shade200),
+                                  cells: [
+                                    DataCell(Text('${index + 1}')),
+                                    DataCell(Text(data[index].lineItemName ?? '')),
+                                    DataCell(Text(data[index].store ?? '')),
+                                    DataCell(Text(data[index].runnersName ?? '')),
+                                    DataCell(Text('\$${data[index].amount ?? ''}')),
+                                    DataCell(Text(data[index].cardNumber ?? '')),
+                                    DataCell(Text(data[index].transactionDate?.split(' ').first ?? '')),
+                                  ],
+                                );
+                              }),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (context, index) => Padding(
+                      padding: EdgeInsets.only(bottom: 0),
+                      child: ProductShimmerWidget(),
+                    ),
+                    childCount: 10,
+                  ),
+                );
+              },
+            ),
+
+          ]),
+        ),
+
+        // Blurred background when the menu is open
+        if (_isMenuOpen)
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+              child: Container(color: Colors.black.withAlpha(20)), // Light dim effect
+            ),
+          ),
+      ]),
+    );
+  }
+}
