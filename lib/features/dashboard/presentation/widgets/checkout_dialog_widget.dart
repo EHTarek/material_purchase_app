@@ -6,10 +6,10 @@ import 'package:material_purchase_app/common/widgets/custom_textfield_widget.dar
 import 'package:material_purchase_app/core/extentions/size_extension.dart';
 import 'package:material_purchase_app/core/theme/style.dart';
 import 'package:material_purchase_app/core/theme/theme.dart';
-import 'package:material_purchase_app/features/dashboard/presentation/business_logic/cart_cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_purchase_app/features/dashboard/presentation/business_logic/purchase_bloc/purchase_bloc.dart';
 
 class CheckoutDialogWidget extends StatefulWidget {
   const CheckoutDialogWidget({super.key});
@@ -19,17 +19,16 @@ class CheckoutDialogWidget extends StatefulWidget {
 }
 
 class _CheckoutDialogWidgetState extends State<CheckoutDialogWidget> {
-  TextEditingController _itemController = TextEditingController();
-  TextEditingController _storeController = TextEditingController();
-  TextEditingController _runnerNameController = TextEditingController();
-  TextEditingController _amountController = TextEditingController();
-  TextEditingController _cardNoController = TextEditingController();
-  TextEditingController _dateController = TextEditingController();
+  final TextEditingController _itemController = TextEditingController();
+  final TextEditingController _storeController = TextEditingController();
+  final TextEditingController _runnerNameController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _cardNoController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CartCubit, CartState>(
-      buildWhen: (previous, current) => current is CartUpdated,
+    return BlocBuilder<PurchaseBloc, PurchaseState>(
       builder: (context, cartState) {
           return BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),

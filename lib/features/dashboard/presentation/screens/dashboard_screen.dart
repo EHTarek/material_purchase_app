@@ -7,11 +7,7 @@ import 'package:material_purchase_app/core/extentions/go_router_extension.dart';
 import 'package:material_purchase_app/core/navigation/routes.dart';
 import 'package:material_purchase_app/core/theme/style.dart';
 import 'package:material_purchase_app/core/theme/theme.dart';
-import 'package:material_purchase_app/features/authentication/presentation/business_logic/authentication_bloc/authentication_bloc.dart';
 import 'package:material_purchase_app/features/dashboard/domain/entities/material_purchase_entity.dart';
-import 'package:material_purchase_app/features/dashboard/domain/entities/products_entity.dart';
-import 'package:material_purchase_app/features/dashboard/presentation/business_logic/all_products_bloc/all_products_bloc.dart';
-import 'package:material_purchase_app/features/dashboard/presentation/business_logic/cart_cubit/cart_cubit.dart';
 import 'package:material_purchase_app/features/dashboard/presentation/business_logic/purchase_bloc/purchase_bloc.dart';
 import 'package:material_purchase_app/features/dashboard/presentation/widgets/checkout_dialog_widget.dart';
 import 'package:material_purchase_app/features/dashboard/presentation/widgets/product_shimmer_widget.dart';
@@ -41,8 +37,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8) {
-        if(materialPurchaseEntity?.materialPurchaseList?.nextPageUrl != null) {
-          context.read<PurchaseBloc>().add(GetPurchaseDataEvent(page: (materialPurchaseEntity?.materialPurchaseList?.currentPage ?? 0) + 1));
+        if(materialPurchaseEntity?.materialPurchaseList?.nextPageUrl != null
+            && materialPurchaseEntity?.materialPurchaseList?.nextPageUrl != ''){
+          context.read<PurchaseBloc>().add(GetPurchaseDataEvent(
+            page: (materialPurchaseEntity?.materialPurchaseList?.currentPage ?? 0) + 1,
+          ));
         }
       }
     });
@@ -51,7 +50,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void dispose() {
     _searchController.dispose();
-    sl<AllProductsBloc>().close();
+    sl<PurchaseBloc>().close();
     super.dispose();
   }
 

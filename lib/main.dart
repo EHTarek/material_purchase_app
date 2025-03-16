@@ -7,8 +7,6 @@ import 'package:material_purchase_app/core/navigation/router.dart';
 import 'package:material_purchase_app/core/theme/theme.dart';
 import 'package:material_purchase_app/features/authentication/presentation/business_logic/authentication_bloc/authentication_bloc.dart';
 import 'package:material_purchase_app/features/authentication/presentation/business_logic/authentication_cubit/authentication_cubit.dart';
-import 'package:material_purchase_app/features/dashboard/presentation/business_logic/all_products_bloc/all_products_bloc.dart';
-import 'package:material_purchase_app/features/dashboard/presentation/business_logic/cart_cubit/cart_cubit.dart';
 import 'package:material_purchase_app/features/dashboard/presentation/business_logic/purchase_bloc/purchase_bloc.dart';
 import 'package:material_purchase_app/features/on_boarding/presentation/business_logic/splash_bloc/splash_bloc.dart';
 import 'package:flutter/material.dart';
@@ -65,15 +63,6 @@ class _MyAppState extends State<MyApp> {
         )),
         BlocProvider(create: (context) => AuthenticationCubit()),
         BlocProvider(create: (context) => PurchaseBloc(getPurchaseData: sl())),
-
-        BlocProvider(create: (context) => AllProductsBloc(
-          getProductsUseCase: sl(),
-        )),
-        BlocProvider(create: (context) => CartCubit(
-          addToCartUseCase: sl(), removeFromCartUseCase: sl(),
-          loadCartUseCase: sl(), clearCartUseCase: sl(),
-          cartCheckoutUseCase: sl(),
-        )),
       ],
       child: MediaQuery.withClampedTextScaling(
         maxScaleFactor: 1,

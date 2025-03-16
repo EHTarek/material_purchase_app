@@ -8,15 +8,10 @@ import 'package:material_purchase_app/features/authentication/domain/use_case/au
 import 'package:material_purchase_app/features/authentication/domain/use_case/user_usecase.dart';
 import 'package:material_purchase_app/features/authentication/presentation/business_logic/authentication_bloc/authentication_bloc.dart';
 import 'package:material_purchase_app/features/authentication/presentation/business_logic/authentication_cubit/authentication_cubit.dart';
-import 'package:material_purchase_app/features/dashboard/data/data_source/dashboard_local_data_source.dart';
 import 'package:material_purchase_app/features/dashboard/data/data_source/dashboard_remote_data_source.dart';
 import 'package:material_purchase_app/features/dashboard/data/repositories/dashboard_repository_impl.dart';
 import 'package:material_purchase_app/features/dashboard/domain/repositories/dashboard_repository.dart';
-import 'package:material_purchase_app/features/dashboard/domain/use_cases/cart_usecase.dart';
-import 'package:material_purchase_app/features/dashboard/domain/use_cases/products_usecase.dart';
 import 'package:material_purchase_app/features/dashboard/domain/use_cases/purchase_usecase.dart';
-import 'package:material_purchase_app/features/dashboard/presentation/business_logic/all_products_bloc/all_products_bloc.dart';
-import 'package:material_purchase_app/features/dashboard/presentation/business_logic/cart_cubit/cart_cubit.dart';
 import 'package:material_purchase_app/core/extra/log.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
