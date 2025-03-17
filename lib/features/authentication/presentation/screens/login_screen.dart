@@ -36,10 +36,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     final prefs = sl<Preferences>();
-    // _emailController = TextEditingController(text: prefs.getStringValue(keyName: PreferencesKey.kUserEmail));
-    // _passwordController = TextEditingController(text: prefs.getStringValue(keyName: PreferencesKey.kUserPass));
-    _emailController = TextEditingController(text: 'interview@gmail.com');
-    _passwordController = TextEditingController(text: '12345678');
+    _emailController = TextEditingController(text: prefs.getStringValue(keyName: PreferencesKey.kUserEmail));
+    _passwordController = TextEditingController(text: prefs.getStringValue(keyName: PreferencesKey.kUserPass));
   }
 
   @override

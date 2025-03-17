@@ -26,6 +26,10 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
 
   Future<void> _onGetPurchaseDataEvent(GetPurchaseDataEvent event, Emitter<PurchaseState> emit) async {
     emit(PurchaseLoading());
+    if(event.page == 1){
+      allPurchase.clear();
+      materialPurchaseEntity = MaterialPurchaseEntity();
+    }
     final result = await getPurchaseData(params: event.page);
     result.fold(
       (failure) {
@@ -79,6 +83,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
       (message) {
         showCustomSnackBar(message, isError: false);
         emit(PurchaseRequestSuccess(message: message));
+        add(GetPurchaseDataEvent(page: 1));
       }
     );
   }

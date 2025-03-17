@@ -32,7 +32,7 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
   @override
   Future<String> purchaseRequest(Map<String, dynamic> data) async {
     final response = await client.postData(ApiEndpoints.purchaseRequest(), data);
-    if (response.statusCode == 201) {
+    if (response.statusCode == 201 || response.statusCode == 400) {
       final data = json.decode(utf8.decode(response.bodyBytes));
       return data['status_message'];
     } else if (response.statusCode == 401) {
