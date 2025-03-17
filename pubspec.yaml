@@ -2,7 +2,7 @@ name: material_purchase_app
 description: "Material Purchase App with Flutter BloC and Clean Architecture"
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.6.2
