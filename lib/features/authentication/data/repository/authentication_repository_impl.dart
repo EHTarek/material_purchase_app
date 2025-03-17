@@ -32,16 +32,12 @@ final class AuthenticationRepositoryImpl extends AuthenticationRepository {
 
   @override
   Future<Either<Failure, bool>> logout(EmptyParam data) async {
-    if (await networkInfo.isConnected) {
-      try {
-        return Right(await remote.logout());
-      } on UnauthorizedException {
-        return const Left(TokenInvalid(message: 'Invalid Token'));
-      } catch (_) {
-        return const Left(ServerFailure(message: 'Something went wrong!'));
-      }
-    } else {
-      return const Left(ConnectionFailure(message: 'No Internet Connection!'));
+    try {
+      return Right(await remote.logout());
+    } on UnauthorizedException {
+      return const Left(TokenInvalid(message: 'Invalid Token'));
+    } catch (_) {
+      return const Left(ServerFailure(message: 'Something went wrong!'));
     }
   }
 

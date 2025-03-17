@@ -3,6 +3,7 @@ import 'package:material_purchase_app/core/cached/preferences_key.dart';
 import 'package:material_purchase_app/core/di/dependency_injection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_purchase_app/core/extra/token_service.dart';
 
 part 'authentication_state.dart';
 
@@ -18,7 +19,10 @@ class AuthenticationCubit extends Cubit<AuthenticationCubitState> {
   }
 
   Future<bool> isUserLoggedIn() async {
-    String token = await prefs.getSecureStringValue(keyName: PreferencesKey.kAccessToken);
+    // String token = await prefs.getSecureStringValue(keyName: PreferencesKey.kAccessToken);
+    final tokenService = sl.get<TokenService>();
+    String token = await tokenService.getToken();
+
     return token.isNotEmpty;
   }
 

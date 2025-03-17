@@ -28,7 +28,6 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
   }
 
   Future<void> _onLoginRequestedEvent(LoginRequested event, Emitter<AuthenticationState> emit) async {
-    print('LoginRequested');
     emit(AuthenticationLoading());
     final result = await loginUseCase(params: LoginRequestEntity(
       email: event.email, password: event.password,

@@ -24,9 +24,6 @@ class AuthenticationDataRemoteSourceImpl implements AuthenticationRemoteDataSour
 
   @override
   Future<LoginResponseModel> login(Map<String, dynamic> data) async {
-
-    print('login data: $data');
-
     final response =  await client.postData(ApiEndpoints.userLogin(), data);
     if(response.statusCode == 200){
       final loginResponse = LoginResponseModel.fromJson(json.decode(utf8.decode(response.bodyBytes)));

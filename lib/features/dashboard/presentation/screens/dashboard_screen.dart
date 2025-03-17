@@ -186,7 +186,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   return current is PurchaseLoaded || current is PurchaseSearchLoaded;
                 },
                 builder: (context, state) {
-                  // if (state is PurchaseLoaded || state is PurchaseSearchLoaded) {
                     if (state is PurchaseLoaded) {
                       materialPurchaseEntity = state.materialPurchaseEntity;
                       purchaseData.addAll(state.materialPurchaseEntity.materialPurchaseList?.data ?? []);
@@ -261,25 +260,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: const CircularProgressIndicator(),
                             ),
-
-                          // if (state is PurchaseLoading)
-                          //   Padding(
-                          //     padding: const EdgeInsets.symmetric(vertical: 10),
-                          //     child: const ProductShimmerWidget(),
-                          //   ),
                         ],
                       ),
                     );
-                  // }
-                  // return SliverList(
-                  //   delegate: SliverChildBuilderDelegate(
-                  //         (context, index) => Padding(
-                  //       padding: EdgeInsets.only(bottom: 0),
-                  //       child: ProductShimmerWidget(),
-                  //     ),
-                  //     childCount: 10,
-                  //   ),
-                  // );
                 },
               ),
 

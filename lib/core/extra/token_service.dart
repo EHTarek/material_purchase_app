@@ -1,12 +1,10 @@
-import 'dart:convert';
-import 'package:material_purchase_app/core/api/api_client.dart';
-import 'package:material_purchase_app/core/api/api_endpoints.dart';
-import 'package:material_purchase_app/core/cached/preferences.dart';
-import 'package:material_purchase_app/core/cached/preferences_key.dart';
-import 'package:material_purchase_app/core/di/dependency_injection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:material_purchase_app/core/api/api_client.dart';
+import 'package:material_purchase_app/core/cached/preferences.dart';
+import 'package:material_purchase_app/core/cached/preferences_key.dart';
+import 'package:material_purchase_app/core/di/dependency_injection.dart';
 
 abstract class TokenService {
   Future<String> getToken();
@@ -25,14 +23,8 @@ class TokenServiceImpl extends TokenService {
     String accessToken = await preferences.getSecureStringValue(keyName: PreferencesKey.kAccessToken);
 
     try {
-      if (accessToken.isNotEmpty) {
+      if (accessToken.isNotEmpty && !JwtDecoder.isExpired(accessToken)) {
         return accessToken;
-
-        /*if (!JwtDecoder.isExpired(accessToken)) {
-          return accessToken;
-        } else if (!JwtDecoder.isExpired(refreshToken)) {
-          return await _refresh(refreshToken);
-        }*/
       }
     } catch (e) {
       debugPrint('Token Error: $e');
