@@ -7,9 +7,10 @@ import 'package:material_purchase_app/core/extentions/go_router_extension.dart';
 import 'package:material_purchase_app/core/navigation/routes.dart';
 import 'package:material_purchase_app/core/theme/style.dart';
 import 'package:material_purchase_app/core/theme/theme.dart';
+import 'package:material_purchase_app/features/authentication/presentation/business_logic/authentication_bloc/authentication_bloc.dart';
 import 'package:material_purchase_app/features/dashboard/domain/entities/material_purchase_entity.dart';
 import 'package:material_purchase_app/features/dashboard/presentation/business_logic/purchase_bloc/purchase_bloc.dart';
-import 'package:material_purchase_app/features/dashboard/presentation/widgets/checkout_dialog_widget.dart';
+import 'package:material_purchase_app/features/dashboard/presentation/widgets/purchase_add_dialog_widget.dart';
 import 'package:material_purchase_app/features/dashboard/presentation/widgets/product_shimmer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,7 +24,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   late TextEditingController _searchController;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   List<DataEntity> purchaseData = [];
   MaterialPurchaseEntity? materialPurchaseEntity;
 
@@ -31,8 +32,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     _searchController = TextEditingController();
-    // context.read<AllProductsBloc>().add(GetAllProductsEvent());
-    // context.read<AuthenticationBloc>().add(GetLoggedInUserData());
     context.read<PurchaseBloc>().add(GetPurchaseDataEvent(page: 1));
 
     _scrollController.addListener(() {
@@ -73,16 +72,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50),
         ),
         onPressed: () {
           showDialog(
-            // barrierColor: Colors.black.withAlpha(50),
             context: context,
-            builder: (context) => const CheckoutDialogWidget(),
+            builder: (context) => const PurchaseAddDialogWidget(),
           );
         },
         child: Icon(Icons.add_circle),
@@ -92,7 +89,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           onRefresh: () async {
             context.read<PurchaseBloc>().add(GetPurchaseDataEvent(page: 1));
           },
-          child: CustomScrollView(slivers: [
+          child: CustomScrollView(controller: _scrollController, slivers: [
 
             SliverAppBar(
               pinned: true,
@@ -112,6 +109,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   position: PopupMenuPosition.under,
                   itemBuilder: (context) => [
                     PopupMenuItem(
+                      onTap: () {
+                        context.pushNamedAndRemoveUntil(Routes.login);
+                        context.read<AuthenticationBloc>().add(LogoutRequested());
+                      },
                       padding: EdgeInsets.zero,
                       height: 30,
                       child: Container(
@@ -136,14 +137,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: CustomTextField(
                   controller: _searchController,
-                  hintText: 'Search',
+                  hintText: 'Item, Store, Runner\'s Name ...',
                   labelText: 'Search',
+                  labelTextSize: 14,
                   style: fontRegular.copyWith(fontSize: 14),
                   hintStyle: fontRegular.copyWith(fontSize: 14),
-                  showLabelText: false,
+                  showLabelText: true,
                   suffixChild: IconButton(
                     icon: Icon(Icons.search, size: 20, color: context.color.gray),
                     onPressed: () {
@@ -163,8 +165,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
 
             BlocConsumer<PurchaseBloc, PurchaseState>(
-              // listenWhen: (previous, current) => current is PurchaseLoaded
-              //     || current is PurchaseSessionOut || current is PurchaseNoInternet,
               listener: (context, state) {
                 if (state is PurchaseSessionOut) {
                   context.pushNamedAndRemoveUntil(Routes.login);

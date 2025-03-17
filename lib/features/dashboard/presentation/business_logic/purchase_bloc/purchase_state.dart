@@ -40,6 +40,17 @@ final class PurchaseSearchLoaded extends PurchaseState {
   List<Object> get props => [materialPurchaseEntity, searchResult];
 }
 
+final class PurchaseRequestSuccess extends PurchaseState {
+  final String message;
+
+  const PurchaseRequestSuccess({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [message];
+}
+
 final class PurchaseError extends PurchaseState {
   final String message;
 

@@ -5,5 +5,6 @@ void _useCases() {
     ..registerLazySingleton(() => LoginUseCase(sl()))
     ..registerLazySingleton(() => GetUserData(sl()))
     ..registerLazySingleton(() => LogoutUseCase(sl()))
-    ..registerLazySingleton(() => GetPurchaseData(sl()));
+    ..registerLazySingleton(() => GetPurchaseData(sl()))
+    ..registerLazySingleton(() => PurchaseRequest(sl()));
 }

@@ -7,6 +7,8 @@ import 'package:material_purchase_app/features/dashboard/data/models/material_pu
 
 abstract class DashboardRemoteDataSource {
   Future<MaterialPurchaseModel> getPurchaseData(int page);
+
+  Future<String> purchaseRequest(Map<String, dynamic> data);
 }
 
 class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
@@ -20,6 +22,19 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
     if (response.statusCode == 200) {
       final data = json.decode(utf8.decode(response.bodyBytes));
       return MaterialPurchaseModel.fromJson(data);
+    } else if (response.statusCode == 401) {
+      throw UnauthorizedException();
+    } else {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<String> purchaseRequest(Map<String, dynamic> data) async {
+    final response = await client.postData(ApiEndpoints.purchaseRequest(), data);
+    if (response.statusCode == 201) {
+      final data = json.decode(utf8.decode(response.bodyBytes));
+      return data['status_message'];
     } else if (response.statusCode == 401) {
       throw UnauthorizedException();
     } else {

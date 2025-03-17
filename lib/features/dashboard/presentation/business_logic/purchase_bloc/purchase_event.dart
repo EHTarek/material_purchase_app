@@ -17,3 +17,10 @@ class SearchPurchaseEvent extends PurchaseEvent {
   @override
   List<Object?> get props => [query];
 }
+
+class PurchaseRequestEvent extends PurchaseEvent {
+  final PurchaseRequestParam param;
+  const PurchaseRequestEvent({required this.param});
+  @override
+  List<Object?> get props => [param];
+}

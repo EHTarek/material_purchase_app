@@ -149,7 +149,7 @@ Material Purchase app with Flutter BloC and Clean Architecture.
   │  │     ├─ screens
   │  │     │  └─ dashboard_screen.dart
   │  │     └─ widgets
-  │  │        ├─ purchasee_add_dialog_widget.dart
+  │  │        ├─ purchase_add_dialog_widget.dart
   │  └─ on_boarding
   │     └─ presentation
   │        ├─ business_logic

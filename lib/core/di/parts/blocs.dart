@@ -6,5 +6,5 @@ void _blocs() {
       loginUseCase: sl(), logoutUseCase: sl(), getUserData: sl(),
     ))
     ..registerFactory<AuthenticationCubit>(() => AuthenticationCubit())
-    ..registerFactory<PurchaseBloc>(() => PurchaseBloc(getPurchaseData: sl()));
+    ..registerFactory<PurchaseBloc>(() => PurchaseBloc(getPurchaseData: sl(), purchaseRequest: sl()));
 }

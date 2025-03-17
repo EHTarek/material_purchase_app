@@ -62,7 +62,7 @@ class _MyAppState extends State<MyApp> {
           loginUseCase: sl(), logoutUseCase: sl(), getUserData: sl(),
         )),
         BlocProvider(create: (context) => AuthenticationCubit()),
-        BlocProvider(create: (context) => PurchaseBloc(getPurchaseData: sl())),
+        BlocProvider(create: (context) => PurchaseBloc(getPurchaseData: sl(), purchaseRequest: sl())),
       ],
       child: MediaQuery.withClampedTextScaling(
         maxScaleFactor: 1,

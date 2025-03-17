@@ -25,4 +25,15 @@ class DashboardRepositoryImpl implements DashboardRepository {
       return const Left(ServerFailure(message: 'Something went wrong!'));
     }
   }
+
+  @override
+  Future<Either<Failure, String>> purchaseRequest(Map<String, dynamic> data) async {
+    try {
+      return Right(await remoteDataSource.purchaseRequest(data));
+    } on UnauthorizedException {
+      return const Left(TokenInvalid(message: 'Invalid Token'));
+    } catch (_) {
+      return const Left(ServerFailure(message: 'Something went wrong!'));
+    }
+  }
 }
